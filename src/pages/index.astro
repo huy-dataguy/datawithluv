@@ -23,16 +23,16 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
   <Header />
   <div class="mx-auto w-full max-w-5xl px-4">
     <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
-
       <!-- ===== MAIN CONTENT ===== -->
       <main id="main-content" data-layout="index" class="min-w-0 flex-1">
-
         <!-- HERO -->
-        <section id="hero" class="pt-10 pb-8 border-b border-border">
+        <section id="hero" class="border-b border-border pt-10 pb-8">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1">
-              <h1 class="my-2 text-4xl font-extrabold tracking-tight sm:text-5xl">
-                Hi, I'm <span class="text-accent">Huy</span> 👋
+              <h1
+                class="my-2 text-4xl font-extrabold tracking-tight sm:text-5xl"
+              >
+                Hi, I'm <span class="text-accent">Quoc Huy</span> 👋
               </h1>
               <p class="mt-1 text-sm font-medium text-muted-text">
                 Full-Stack Developer · System Design · Backend Architect
@@ -41,21 +41,26 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
             <a
               target="_blank"
               href="/rss.xml"
-              class="mt-4 inline-block shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+              class="mt-4 inline-block shrink-0 opacity-60 transition-opacity hover:opacity-100"
               aria-label="rss feed"
               title="RSS Feed"
             >
-              <IconRss width={18} height={18} class="stroke-accent stroke-3 rtl:-rotate-90" />
+              <IconRss
+                width={18}
+                height={18}
+                class="stroke-accent stroke-3 rtl:-rotate-90"
+              />
               <span class="sr-only">RSS Feed</span>
             </a>
           </div>
 
           <p class="mt-4 max-w-xl text-sm leading-relaxed text-muted-text">
-            I build high-performance backend systems, scalable microservices, and clean frontend interfaces.
-            I write about{" "}
+            I build high-performance backend systems, scalable microservices,
+            and clean frontend interfaces. I write about{" "}
             <span class="font-semibold text-accent">System Design</span>,{" "}
             <span class="font-semibold text-accent">Go</span>,{" "}
-            <span class="font-semibold text-accent">Node.js</span>, and modern web stacks.
+            <span class="font-semibold text-accent">Node.js</span>, and modern
+            web stacks.
           </p>
 
           {
@@ -69,37 +74,53 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         </section>
 
         <!-- FEATURED PROJECTS -->
-        <section id="projects" class="pt-8 pb-6 border-b border-border">
+        <section id="projects" class="border-b border-border pt-8 pb-6">
           <div class="section-divider">
-            <h2 class="text-lg font-bold tracking-tight">🚀 Featured Projects</h2>
+            <h2 class="text-lg font-bold tracking-tight">
+              🚀 Featured Projects
+            </h2>
           </div>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <a
               href="#"
               class="group block rounded-lg border border-border bg-surface p-4 transition-all duration-200 hover:border-accent/60 hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_20px_var(--accent-soft)]"
             >
-              <h3 class="font-bold text-accent group-hover:underline text-sm">FinApp Dashboard</h3>
+              <h3 class="text-sm font-bold text-accent group-hover:underline">
+                FinApp Dashboard
+              </h3>
               <p class="mt-1.5 text-xs leading-relaxed text-muted-text">
-                A scalable financial dashboard built with Next.js & Prisma, handling high concurrency with real-time analytics.
+                A scalable financial dashboard built with Next.js & Prisma,
+                handling high concurrency with real-time analytics.
               </p>
               <div class="mt-3 flex flex-wrap gap-1.5">
-                {["Next.js", "TypeScript", "Prisma"].map(t => (
-                  <span class="rounded-full border border-border px-2 py-0.5 text-xs text-muted-text">{t}</span>
-                ))}
+                {
+                  ["Next.js", "TypeScript", "Prisma"].map(t => (
+                    <span class="rounded-full border border-border px-2 py-0.5 text-xs text-muted-text">
+                      {t}
+                    </span>
+                  ))
+                }
               </div>
             </a>
             <a
               href="#"
               class="group block rounded-lg border border-border bg-surface p-4 transition-all duration-200 hover:border-accent/60 hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_20px_var(--accent-soft)]"
             >
-              <h3 class="font-bold text-accent group-hover:underline text-sm">Vovinam Management</h3>
+              <h3 class="text-sm font-bold text-accent group-hover:underline">
+                Vovinam Management
+              </h3>
               <p class="mt-1.5 text-xs leading-relaxed text-muted-text">
-                Full-featured personnel management system with RBAC, real-time syncing, and Google auth.
+                Full-featured personnel management system with RBAC, real-time
+                syncing, and Google auth.
               </p>
               <div class="mt-3 flex flex-wrap gap-1.5">
-                {["Next.js", "Supabase", "PostgreSQL"].map(t => (
-                  <span class="rounded-full border border-border px-2 py-0.5 text-xs text-muted-text">{t}</span>
-                ))}
+                {
+                  ["Next.js", "Supabase", "PostgreSQL"].map(t => (
+                    <span class="rounded-full border border-border px-2 py-0.5 text-xs text-muted-text">
+                      {t}
+                    </span>
+                  ))
+                }
               </div>
             </a>
           </div>
@@ -119,7 +140,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
                 <h2 class="text-lg font-bold tracking-tight">⭐ Featured</h2>
               </div>
               <ul>
-                {featuredPosts.map(data => <Card variant="h3" {...data} />)}
+                {featuredPosts.map(data => (
+                  <Card variant="h3" {...data} />
+                ))}
               </ul>
             </section>
           )
@@ -130,7 +153,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           recentPosts.length > 0 && (
             <section id="recent-posts" class="pt-8 pb-6">
               <div class="section-divider">
-                <h2 class="text-lg font-bold tracking-tight">📝 Recent Posts</h2>
+                <h2 class="text-lg font-bold tracking-tight">
+                  📝 Recent Posts
+                </h2>
               </div>
               <ul>
                 {recentPosts.map(
@@ -145,7 +170,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
         <div class="my-6 text-center">
           <LinkButton
             href="/posts/"
-            class="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 px-5 py-2 text-sm text-accent hover:bg-accent/10 transition-colors"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 px-5 py-2 text-sm text-accent transition-colors hover:bg-accent/10"
           >
             All Posts
             <IconArrowRight class="inline-block rtl:-rotate-180" />
@@ -159,7 +184,6 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           <RightSidebar />
         </div>
       </div>
-
     </div>
   </div>
   <Footer />

@@ -28,7 +28,9 @@ const isActive = (path: string) => {
   Skip to content
 </a>
 
-<header class="app-layout flex flex-col items-center justify-between sm:flex-row">
+<header
+  class="app-layout flex flex-col items-center justify-between sm:flex-row"
+>
   <div
     id="top-nav-wrap"
     class:list={[
@@ -39,12 +41,11 @@ const isActive = (path: string) => {
     ]}
   >
     <!-- Logo with amber accent dot -->
-    <a
-      href="/"
-      class="absolute py-1 whitespace-nowrap sm:static sm:my-auto"
-    >
-      <span class="text-xl font-bold sm:text-2xl tracking-tight text-foreground">
-        Huy<span class="text-accent">.</span>dev
+    <a href="/" class="absolute py-1 whitespace-nowrap sm:static sm:my-auto">
+      <span
+        class="text-xl font-bold tracking-tight text-foreground sm:text-2xl"
+      >
+        datawithluv<span class="text-accent"></span>
       </span>
     </a>
 
@@ -77,7 +78,10 @@ const isActive = (path: string) => {
           </a>
         </li>
         <li class="col-span-2">
-          <a href="/categories" class:list={{ "active-nav": isActive("/categories") }}>
+          <a
+            href="/categories"
+            class:list={{ "active-nav": isActive("/categories") }}
+          >
             Categories
           </a>
         </li>
@@ -94,6 +98,11 @@ const isActive = (path: string) => {
         <li class="col-span-2">
           <a href="/about" class:list={{ "active-nav": isActive("/about") }}>
             About
+          </a>
+        </li>
+        <li class="col-span-2">
+          <a href="/tools" class:list={{ "active-nav": isActive("/tools") }}>
+            Tools
           </a>
         </li>
         {
