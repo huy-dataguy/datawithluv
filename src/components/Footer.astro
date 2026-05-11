@@ -19,13 +19,13 @@ const { noMarginTop = false, class: className, ...attrs } = Astro.props;
     class:list={[
       "py-6 sm:py-5",
       "border-t border-border",
-      "flex flex-col items-center justify-between sm:flex-row-reverse gap-3",
+      "flex flex-col items-center justify-between gap-3 sm:flex-row-reverse",
     ]}
   >
     <Socials />
     <div class="flex items-center gap-1.5 text-xs text-muted-text">
       <span>© {currentYear}</span>
-      <span class="text-accent font-semibold">Huy.dev</span>
+      <span class="font-semibold text-accent">huy-dataguy</span>
       <span>· Built with Astro</span>
     </div>
   </div>

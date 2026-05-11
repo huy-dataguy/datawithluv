@@ -1,6 +1,6 @@
-# Huy's Tech Blog
+#Quoc Huy's Blog
 
-Personal blog về Backend, System Design, và Modern Web Development.
+Personal blog.
 
 Built with [Astro](https://astro.build/) using the [AstroPaper](https://github.com/satnaing/astro-paper) theme.
 
@@ -15,14 +15,14 @@ Blog sẽ chạy tại `http://localhost:4321`.
 
 ## Commands
 
-| Command               | Action                                         |
-| :-------------------- | :--------------------------------------------- |
-| `pnpm install`        | Cài dependencies                               |
-| `pnpm run dev`        | Chạy dev server tại `localhost:4321`           |
-| `pnpm run build`      | Build production site ra `./dist/`             |
-| `pnpm run preview`    | Preview build locally trước khi deploy         |
-| `pnpm run format`     | Format code với Prettier                       |
-| `pnpm run lint`       | Lint với ESLint                                |
+| Command            | Action                                 |
+| :----------------- | :------------------------------------- |
+| `pnpm install`     | Cài dependencies                       |
+| `pnpm run dev`     | Chạy dev server tại `localhost:4321`   |
+| `pnpm run build`   | Build production site ra `./dist/`     |
+| `pnpm run preview` | Preview build locally trước khi deploy |
+| `pnpm run format`  | Format code với Prettier               |
+| `pnpm run lint`    | Lint với ESLint                        |
 
 ## Tech Stack
 
