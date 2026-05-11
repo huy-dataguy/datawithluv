@@ -38,38 +38,37 @@ html[data-theme="light"] {
 }
 
 html[data-theme="dark"] {
-  /* Backgrounds — Softer, more premium dark slate */
-  --background: #181a20;
-  --surface: #22252e;
-  --surface-elevated: #2d313c;
+  /* Backgrounds — Soft Dark Slate (Not deep dark) */
+  --background: #1e212b;
+  --surface: #282b36;
+  --surface-elevated: #343846;
 
   /* Text */
-  --foreground: #e2e8f0;
-  --muted-text: #8b94a5;
+  --foreground: #e6e9f0;
+  --muted-text: #949db0;
 
-  /* Accent: Gold/Amber — the hero color */
+  /* Accent: Gold/Amber */
   --accent: #f0a832;
   --accent-hover: #f5bc56;
-  --accent-soft: #f0a8321a;
+  --accent-soft: #f0a83220;
 
   /* Secondary accent: Teal */
   --teal: #2dd4bf;
 
   /* Borders */
-  --border: #303440;
-  --border-strong: #404555;
+  --border: #3d4150;
+  --border-strong: #4d5366;
 
   /* Muted */
-  --muted: #2d313c;
+  --muted: #343846;
 }
 
-/* Premium edge light ray / ambient glow effect for dark mode */
+/* Aurora / Ambient edge color effect for dark mode */
 html[data-theme="dark"] body {
-  background-image: radial-gradient(
-    ellipse 80% 50% at 50% -20%,
-    color-mix(in srgb, var(--accent) 15%, transparent),
-    transparent
-  );
+  background-color: var(--background);
+  background-image: 
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%),
+    radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--teal) 12%, transparent), transparent 50%);
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
