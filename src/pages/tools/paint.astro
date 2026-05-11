@@ -1,0 +1,677 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Main from "@/layouts/Main.astro";
+---
+
+<Layout title="Paint Tool | Huy's Tech Blog" description="Personal image editor - paste, draw, add text, blur regions">
+  <Main pageTitle="Paint" pageDesc="Paste an image, annotate with drawings and text, blur sensitive regions, then copy the result.">
+    <div id="paint-app">
+      <!-- Row 1: Tools + Color + Size -->
+      <div class="toolbar">
+        <div class="tool-group">
+          <button class="tool-btn active" data-tool="pen" title="Pen (P)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.37 2.63a2.12 2.12 0 0 1 3 3L14 13l-4 1 1-4Z"/><path d="M9 15c-3 1-5.5 1-6 3.5S6 22 8 20c1-1 1-4 1-5Z"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="rectangle" title="Rectangle (R)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="circle" title="Circle (C)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="arrow" title="Arrow (A)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="12 5 19 5 19 12"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="text" title="Text (T)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="blur" title="Blur (B)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="12" cy="12" r="3" opacity="0.5"/><circle cx="12" cy="12" r="6" opacity="0.3"/></svg>
+          </button>
+          <button class="tool-btn" data-tool="eraser" title="Eraser (E)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+          </button>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="color-group">
+          <button class="color-dot active" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+          <button class="color-dot" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+          <button class="color-dot" data-color="#22c55e" style="background:#22c55e" title="Green"></button>
+          <button class="color-dot" data-color="#f59e0b" style="background:#f59e0b" title="Yellow"></button>
+          <button class="color-dot" data-color="#000000" style="background:#000000" title="Black"></button>
+          <button class="color-dot" data-color="#ffffff" style="background:#fff;border:1px solid #d1d5db" title="White"></button>
+          <label class="custom-color">
+            <input type="color" id="color-picker" value="#ef4444" />
+          </label>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="size-group">
+          <span id="brush-size-label">3px</span>
+          <input type="range" id="brush-size" min="1" max="30" value="3" />
+        </div>
+      </div>
+
+      <!-- Row 2: Actions -->
+      <div class="action-bar">
+        <label class="action-btn" title="Upload image">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          <span>Upload</span>
+          <input type="file" id="file-upload" accept="image/*" class="sr-only" />
+        </label>
+        <button class="action-btn" id="btn-undo" title="Undo (Ctrl+Z)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+          <span>Undo</span>
+        </button>
+        <button class="action-btn" id="btn-redo" title="Redo (Ctrl+Shift+Z)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+          <span>Redo</span>
+        </button>
+        <button class="action-btn danger" id="btn-clear" title="Clear all">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          <span>Clear</span>
+        </button>
+        <div class="action-spacer"></div>
+        <span class="paste-hint">Ctrl+V to paste</span>
+        <button class="secondary-btn" id="btn-download" title="Download PNG">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Save
+        </button>
+        <button class="primary-btn" id="btn-copy" title="Copy (Ctrl+C)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          Copy
+        </button>
+      </div>
+
+      <!-- Canvas -->
+      <div class="canvas-area">
+        <canvas id="main-canvas" width="800" height="500"></canvas>
+        <input type="text" id="text-input" style="display:none" />
+      </div>
+    </div>
+  </Main>
+</Layout>
+
+<style>
+  :global(#paint-app) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* --- Toolbar Row 1 --- */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+  }
+
+  .tool-group {
+    display: flex;
+    gap: 2px;
+  }
+
+  .tool-btn {
+    padding: 0.4rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tool-btn:hover {
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  }
+
+  .tool-btn.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  .tool-btn.active svg {
+    stroke: white;
+  }
+
+  .sep {
+    width: 1px;
+    height: 1.5rem;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* --- Colors --- */
+  .color-group {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.12s;
+    padding: 0;
+  }
+
+  .color-dot:hover {
+    transform: scale(1.15);
+  }
+
+  .color-dot.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .custom-color input[type="color"] {
+    width: 22px;
+    height: 22px;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border);
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  /* --- Size --- */
+  .size-group {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .size-group span {
+    font-size: 0.7rem;
+    color: var(--foreground-muted, #888);
+    min-width: 2rem;
+    text-align: right;
+  }
+
+  .size-group input[type="range"] {
+    width: 4rem;
+  }
+
+  /* --- Action Bar Row 2 --- */
+  .action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+
+  .action-btn span {
+    font-size: 0.7rem;
+  }
+
+  .action-btn:hover {
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  }
+
+  .action-btn.danger:hover {
+    background: color-mix(in srgb, #ef4444 15%, transparent);
+    color: #ef4444;
+  }
+
+  .action-btn.danger:hover svg {
+    stroke: #ef4444;
+  }
+
+  .action-spacer {
+    flex: 1;
+  }
+
+  .paste-hint {
+    font-size: 0.65rem;
+    color: var(--foreground-muted, #888);
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+
+  .primary-btn {
+    background: var(--accent);
+    color: white;
+  }
+
+  .primary-btn svg {
+    stroke: white;
+  }
+
+  .primary-btn:hover {
+    opacity: 0.9;
+  }
+
+  .primary-btn.copied {
+    background: #22c55e;
+  }
+
+  .secondary-btn {
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+    color: var(--foreground);
+  }
+
+  .secondary-btn:hover {
+    background: color-mix(in srgb, var(--foreground) 18%, transparent);
+  }
+
+  /* --- Canvas area --- */
+  .canvas-area {
+    position: relative;
+    overflow: auto;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--foreground) 3%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  #main-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  #text-input {
+    position: absolute;
+    z-index: 10;
+    background: transparent;
+    border-bottom: 2px solid var(--accent);
+    outline: none;
+    color: var(--foreground);
+    min-width: 80px;
+    font-family: var(--font-inter, sans-serif);
+    padding: 2px 0;
+  }
+
+  /* --- Mobile: compact --- */
+  @media (max-width: 640px) {
+    .action-btn span {
+      display: none;
+    }
+    .paste-hint {
+      display: none;
+    }
+    .toolbar {
+      gap: 0.375rem;
+      padding: 0.375rem 0.5rem;
+    }
+    .action-bar {
+      padding: 0.25rem 0.5rem;
+    }
+  }
+</style>
+
+<script>
+  const BG_COLOR = "#ffffff";
+
+  const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+  const textInput = document.getElementById("text-input") as HTMLInputElement;
+  const fileUpload = document.getElementById("file-upload") as HTMLInputElement;
+
+  const ctx = mainCanvas.getContext("2d")!;
+
+  type Tool = "pen" | "rectangle" | "circle" | "arrow" | "text" | "blur" | "eraser";
+  let currentTool: Tool = "pen";
+  let color = "#ef4444";
+  let brushSize = 3;
+  let drawing = false;
+  let startX = 0;
+  let startY = 0;
+  let currentX = 0;
+  let currentY = 0;
+
+  let history: ImageData[] = [];
+  let historyIdx = -1;
+
+  function pushHistory() {
+    const data = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
+    history = history.slice(0, historyIdx + 1);
+    history.push(data);
+    historyIdx = history.length - 1;
+  }
+
+  function fillPlaceholder() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+    ctx.fillStyle = "#9ca3af";
+    ctx.font = "16px Inter, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Ctrl+V to paste, or click Upload", mainCanvas.width / 2, mainCanvas.height / 2);
+    ctx.textAlign = "start";
+    ctx.textBaseline = "alphabetic";
+  }
+  fillPlaceholder();
+  pushHistory();
+
+  function getPos(e: MouseEvent | TouchEvent) {
+    const rect = mainCanvas.getBoundingClientRect();
+    const scaleX = mainCanvas.width / rect.width;
+    const scaleY = mainCanvas.height / rect.height;
+    const clientX = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+  }
+
+  function restoreLast() {
+    if (history[historyIdx]) {
+      const last = history[historyIdx];
+      if (mainCanvas.width !== last.width || mainCanvas.height !== last.height) {
+        mainCanvas.width = last.width;
+        mainCanvas.height = last.height;
+      }
+      ctx.putImageData(last, 0, 0);
+    }
+  }
+
+  function drawShapePreview() {
+    if (currentTool === "pen" || currentTool === "eraser" || currentTool === "text" || currentTool === "blur") return;
+    restoreLast();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    if (currentTool === "rectangle") {
+      ctx.rect(startX, startY, currentX - startX, currentY - startY);
+      ctx.stroke();
+    } else if (currentTool === "circle") {
+      const rx = Math.abs(currentX - startX) / 2;
+      const ry = Math.abs(currentY - startY) / 2;
+      ctx.ellipse(startX + (currentX - startX) / 2, startY + (currentY - startY) / 2, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    } else if (currentTool === "arrow") {
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(currentX, currentY);
+      ctx.stroke();
+      const headlen = 12 + brushSize;
+      const angle = Math.atan2(currentY - startY, currentX - startX);
+      ctx.beginPath();
+      ctx.moveTo(currentX, currentY);
+      ctx.lineTo(currentX - headlen * Math.cos(angle - Math.PI / 6), currentY - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(currentX - headlen * Math.cos(angle + Math.PI / 6), currentY - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+  }
+
+  function drawBlurPreview() {
+    restoreLast();
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = "rgba(255,255,255,0.8)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(Math.min(startX, currentX), Math.min(startY, currentY), Math.abs(currentX - startX), Math.abs(currentY - startY));
+    ctx.setLineDash([]);
+  }
+
+  function applyBlur() {
+    const x = Math.min(startX, currentX), y = Math.min(startY, currentY);
+    const w = Math.abs(currentX - startX), h = Math.abs(currentY - startY);
+    if (w < 2 || h < 2) return;
+    restoreLast();
+    const tmp = document.createElement("canvas");
+    tmp.width = mainCanvas.width; tmp.height = mainCanvas.height;
+    const tc = tmp.getContext("2d")!;
+    tc.drawImage(mainCanvas, 0, 0);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    ctx.filter = `blur(${Math.max(8, brushSize * 3)}px)`;
+    ctx.drawImage(tmp, 0, 0);
+    ctx.restore();
+    pushHistory();
+  }
+
+  function onStart(e: MouseEvent | TouchEvent) {
+    if (textInput.style.display !== "none") return;
+    e.preventDefault();
+    const pos = getPos(e);
+    if (currentTool === "text") {
+      const rect = mainCanvas.getBoundingClientRect();
+      const wrap = mainCanvas.parentElement!;
+      const wrapRect = wrap.getBoundingClientRect();
+      const scaleX = rect.width / mainCanvas.width;
+      const scaleY = rect.height / mainCanvas.height;
+      const fontSize = Math.max(16, brushSize * 6);
+      textInput.style.display = "block";
+      textInput.style.left = (rect.left - wrapRect.left + pos.x * scaleX) + "px";
+      textInput.style.top = (rect.top - wrapRect.top + pos.y * scaleY) + "px";
+      textInput.style.fontSize = (fontSize * scaleY) + "px";
+      textInput.style.color = color;
+      textInput.value = "";
+      textInput.dataset.canvasX = String(pos.x);
+      textInput.dataset.canvasY = String(pos.y);
+      textInput.dataset.fontSize = String(fontSize);
+      setTimeout(() => textInput.focus(), 50);
+      return;
+    }
+    drawing = true;
+    startX = pos.x; startY = pos.y; currentX = pos.x; currentY = pos.y;
+    if (currentTool === "pen" || currentTool === "eraser") {
+      ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = currentTool === "eraser" ? BG_COLOR : color;
+      ctx.lineWidth = brushSize;
+    }
+  }
+
+  function onMove(e: MouseEvent | TouchEvent) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    currentX = pos.x; currentY = pos.y;
+    if (currentTool === "pen" || currentTool === "eraser") {
+      ctx.lineTo(pos.x, pos.y); ctx.stroke();
+    } else if (currentTool === "blur") {
+      drawBlurPreview();
+    } else {
+      drawShapePreview();
+    }
+  }
+
+  function onEnd() {
+    if (!drawing) return;
+    drawing = false;
+    if (currentTool === "pen" || currentTool === "eraser") {
+      ctx.closePath(); pushHistory();
+    } else if (currentTool === "blur") {
+      applyBlur();
+    } else {
+      restoreLast(); drawShapePreview(); pushHistory();
+    }
+  }
+
+  mainCanvas.addEventListener("mousedown", onStart);
+  mainCanvas.addEventListener("mousemove", onMove);
+  mainCanvas.addEventListener("mouseup", onEnd);
+  mainCanvas.addEventListener("mouseleave", onEnd);
+  mainCanvas.addEventListener("touchstart", onStart, { passive: false });
+  mainCanvas.addEventListener("touchmove", onMove, { passive: false });
+  mainCanvas.addEventListener("touchend", onEnd);
+
+  function commitText() {
+    const val = textInput.value.trim();
+    if (val) {
+      const fs = Number(textInput.dataset.fontSize) || 20;
+      ctx.font = `${fs}px Inter, sans-serif`;
+      ctx.fillStyle = color;
+      ctx.textBaseline = "top";
+      ctx.fillText(val, Number(textInput.dataset.canvasX), Number(textInput.dataset.canvasY));
+      ctx.textBaseline = "alphabetic";
+      pushHistory();
+    }
+    textInput.style.display = "none"; textInput.value = "";
+  }
+  textInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); commitText(); }
+    if (e.key === "Escape") { textInput.style.display = "none"; textInput.value = ""; }
+  });
+  textInput.addEventListener("blur", commitText);
+
+  document.addEventListener("paste", (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault();
+        const blob = item.getAsFile();
+        if (!blob) continue;
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > 1200) { h = (1200 / w) * h; w = 1200; }
+          mainCanvas.width = w; mainCanvas.height = h;
+          ctx.drawImage(img, 0, 0, w, h);
+          history = []; historyIdx = -1; pushHistory();
+          URL.revokeObjectURL(img.src);
+        };
+        img.src = URL.createObjectURL(blob);
+        return;
+      }
+    }
+  });
+
+  fileUpload.addEventListener("change", () => {
+    const file = fileUpload.files?.[0];
+    if (!file) return;
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > 1200) { h = (1200 / w) * h; w = 1200; }
+      mainCanvas.width = w; mainCanvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      history = []; historyIdx = -1; pushHistory();
+      URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(file);
+    fileUpload.value = "";
+  });
+
+  const toolBtns = document.querySelectorAll<HTMLButtonElement>(".tool-btn");
+  toolBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      toolBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentTool = btn.dataset.tool as Tool;
+      mainCanvas.style.cursor = currentTool === "text" ? "text" : "crosshair";
+    });
+  });
+
+  const colorDots = document.querySelectorAll<HTMLButtonElement>(".color-dot");
+  const colorPicker = document.getElementById("color-picker") as HTMLInputElement;
+  function setColor(c: string) {
+    color = c;
+    colorDots.forEach((d) => d.classList.toggle("active", d.dataset.color === c));
+  }
+  colorDots.forEach((dot) => {
+    dot.addEventListener("click", () => { setColor(dot.dataset.color!); colorPicker.value = dot.dataset.color!; });
+  });
+  colorPicker.addEventListener("input", (e) => {
+    setColor((e.target as HTMLInputElement).value);
+    colorDots.forEach((d) => d.classList.remove("active"));
+  });
+
+  const brushSizeInput = document.getElementById("brush-size") as HTMLInputElement;
+  const brushSizeLabel = document.getElementById("brush-size-label")!;
+  brushSizeInput.addEventListener("input", (e) => {
+    brushSize = Number((e.target as HTMLInputElement).value);
+    brushSizeLabel.textContent = brushSize + "px";
+  });
+
+  document.getElementById("btn-undo")!.addEventListener("click", () => {
+    if (historyIdx > 0) { historyIdx--; ctx.putImageData(history[historyIdx], 0, 0); }
+  });
+  document.getElementById("btn-redo")!.addEventListener("click", () => {
+    if (historyIdx < history.length - 1) { historyIdx++; ctx.putImageData(history[historyIdx], 0, 0); }
+  });
+  document.getElementById("btn-clear")!.addEventListener("click", () => {
+    mainCanvas.width = 800; mainCanvas.height = 500;
+    fillPlaceholder(); history = []; historyIdx = -1; pushHistory();
+  });
+
+  const copyBtn = document.getElementById("btn-copy")!;
+  copyBtn.addEventListener("click", async () => {
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => mainCanvas.toBlob(resolve, "image/png"));
+      if (!blob) return;
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      copyBtn.classList.add("copied");
+      setTimeout(() => copyBtn.classList.remove("copied"), 1500);
+    } catch {
+      const url = mainCanvas.toDataURL("image/png");
+      const a = document.createElement("a"); a.href = url; a.download = "paint-output.png"; a.click();
+    }
+  });
+
+  document.getElementById("btn-download")!.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.download = `paint-${Date.now()}.png`; a.href = mainCanvas.toDataURL("image/png"); a.click();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (textInput.style.display !== "none") return;
+    if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+      e.preventDefault();
+      if (historyIdx > 0) { historyIdx--; ctx.putImageData(history[historyIdx], 0, 0); }
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === "Z" || (e.key === "z" && e.shiftKey))) {
+      e.preventDefault();
+      if (historyIdx < history.length - 1) { historyIdx++; ctx.putImageData(history[historyIdx], 0, 0); }
+    } else if ((e.ctrlKey || e.metaKey) && e.key === "c" && !window.getSelection()?.toString()) {
+      e.preventDefault(); copyBtn.click();
+    } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+      const map: Record<string, Tool> = { p: "pen", r: "rectangle", c: "circle", a: "arrow", t: "text", b: "blur", e: "eraser" };
+      const tool = map[e.key.toLowerCase()];
+      if (tool) document.querySelector<HTMLButtonElement>(`[data-tool="${tool}"]`)?.click();
+    }
+  });
+</script>
