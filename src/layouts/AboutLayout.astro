@@ -3,6 +3,7 @@ import type { MarkdownLayoutProps } from "astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import PageHeader from "@/components/PageHeader.astro";
 import Layout from "./Layout.astro";
 import { SITE } from "@/config";
 
@@ -14,9 +15,9 @@ const { frontmatter } = Astro.props;
 <Layout title={`${frontmatter.title} | ${SITE.title}`}>
   <Header />
   <Breadcrumb />
-  <main id="main-content" class="app-layout">
-    <section id="about" class="app-prose mb-28 max-w-app prose-img:border-0">
-      <h1 class="text-2xl tracking-wider sm:text-3xl">{frontmatter.title}</h1>
+  <main id="main-content" class="app-layout pb-16">
+    <PageHeader title={frontmatter.title} desc="A little bit about myself and my journey." />
+    <section id="about" class="app-prose mt-8 max-w-app prose-img:border-0">
       <slot />
     </section>
   </main>

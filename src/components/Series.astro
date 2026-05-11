@@ -1,0 +1,27 @@
+---
+type Props = {
+  series: string;
+  seriesName: string;
+  size?: "sm" | "lg";
+  active?: boolean;
+};
+
+const { series, seriesName, size = "lg", active = false } = Astro.props;
+---
+
+<li>
+  <a
+    href={`/series/${series}/`}
+    transition:name={series}
+    class:list={[
+      "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-medium transition-all duration-150",
+      !active && "border-border text-muted-text hover:border-accent/60 hover:text-accent hover:bg-accent/5",
+      // Active: amber filled
+      active && "border-accent bg-accent/15 text-accent",
+      { "text-sm": size === "sm" },
+      { "text-base": size === "lg" },
+    ]}
+  >
+    📚 {seriesName}
+  </a>
+</li>

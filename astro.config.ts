@@ -23,7 +23,7 @@ export default defineConfig({
     remarkPlugins: [remarkToc, [remarkCollapse, { test: "Table of contents" }]],
     shikiConfig: {
       // For more themes, visit https://shiki.style/themes
-      themes: { light: "min-light", dark: "night-owl" },
+      themes: { light: "github-light", dark: "one-dark-pro" },
       defaultColor: false,
       wrap: false,
       transformers: [
@@ -61,12 +61,20 @@ export default defineConfig({
     preserveScriptOrder: true,
     fonts: [
       {
-        name: "Google Sans Code",
-        cssVariable: "--font-google-sans-code",
+        name: "Inter",
+        cssVariable: "--font-inter",
         provider: fontProviders.google(),
-        fallbacks: ["monospace"],
+        fallbacks: ["sans-serif"],
         weights: [300, 400, 500, 600, 700],
         styles: ["normal", "italic"],
+      },
+      {
+        name: "Plus Jakarta Sans",
+        cssVariable: "--font-jakarta",
+        provider: fontProviders.google(),
+        fallbacks: ["sans-serif"],
+        weights: [400, 500, 600, 700, 800],
+        styles: ["normal"],
       },
     ],
   },

@@ -1,0 +1,51 @@
+---
+/**
+ * PageHeader — Consistent gradient heading for all list/index pages.
+ *
+ * Props:
+ *   prefix  — plain text label (e.g. "All", "Category:", "Tag:")
+ *   title   — gradient-colored keyword (e.g. "Posts", "Backend", "#database")
+ *   desc    — subtitle below heading
+ *   accent  — "amber" (default) | "teal" | "purple"
+ */
+
+type Accent = "amber" | "teal" | "purple";
+
+type Props = {
+  prefix?: string;
+  title: string;
+  desc?: string;
+  accent?: Accent;
+  titleTransition?: string;
+};
+
+const { prefix, title, desc, accent = "amber", titleTransition } = Astro.props;
+
+const gradients: Record<Accent, string> = {
+  amber: "linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%)",
+  teal:  "linear-gradient(135deg, var(--teal, #14b8a6) 0%, #06b6d4 100%)",
+  purple:"linear-gradient(135deg, #a855f7 0%, #6366f1 100%)",
+};
+
+const gradient = gradients[accent];
+---
+
+<div class="mb-8 border-b border-border pb-6">
+  <h1
+    class="text-3xl font-extrabold sm:text-4xl"
+    style={`font-family: var(--font-heading, sans-serif)`}
+  >
+    {prefix && (
+      <span class="text-foreground">{prefix} </span>
+    )}
+    <span
+      transition:name={titleTransition}
+      style={`background: ${gradient}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;`}
+    >
+      {title}
+    </span>
+  </h1>
+  {desc && (
+    <p class="mt-2 text-sm text-muted-text">{desc}</p>
+  )}
+</div>

@@ -10,15 +10,15 @@ type Props = {
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 
-const { title, description, ...props } = data;
+const { title, description, tags, category, series, ...props } = data;
 ---
 
-<li class="my-6">
+<li class="group my-5 rounded-lg border border-border bg-surface px-5 py-4 transition-all duration-200 hover:border-accent/60 hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_20px_var(--accent-soft)]">
   <a
     href={getPath(id, filePath)}
     class:list={[
-      "inline-block text-lg font-medium text-accent",
-      "decoration-dashed underline-offset-4 hover:underline",
+      "inline-block text-lg font-semibold",
+      "text-accent decoration-dashed underline-offset-4 hover:underline",
       "focus-visible:no-underline focus-visible:underline-offset-0",
     ]}
   >
@@ -28,6 +28,24 @@ const { title, description, ...props } = data;
       {title}
     </Heading>
   </a>
-  <Datetime {...props} />
-  <p>{description}</p>
+  <div class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+    <Datetime {...props} />
+    {category && (
+      <a
+        href={`/categories/${slugifyStr(category)}/`}
+        class="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/8 px-2 py-0.5 text-xs font-medium text-accent transition-all hover:bg-accent/15"
+      >
+        📁 {category}
+      </a>
+    )}
+    {series && (
+      <a
+        href={`/series/${slugifyStr(series)}/`}
+        class="inline-flex items-center gap-1 rounded-full border border-teal/40 bg-teal/8 px-2 py-0.5 text-xs font-medium text-teal transition-all hover:bg-teal/15"
+      >
+        📚 {series}
+      </a>
+    )}
+  </div>
+  <p class="mt-2 text-sm leading-relaxed text-muted-text">{description}</p>
 </li>

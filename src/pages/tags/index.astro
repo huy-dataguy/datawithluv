@@ -1,24 +1,58 @@
 ---
 import { getCollection } from "astro:content";
-import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
-import Tag from "@/components/Tag.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
+import getPostsByTag from "@/utils/getPostsByTag";
 import { SITE } from "@/config";
 
 const posts = await getCollection("blog");
+const tags = getUniqueTags(posts);
 
-let tags = getUniqueTags(posts);
+// Count posts per tag
+const tagsWithCount = tags.map(({ tag, tagName }) => ({
+  tag,
+  tagName,
+  count: getPostsByTag(posts, tag).length,
+}));
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
+<Layout title={`Tags | ${SITE.title}`} description="All tags used in posts.">
   <Header />
-  <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    <ul class="flex flex-wrap gap-6">
-      {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} />)}
-    </ul>
-  </Main>
+  <Breadcrumb />
+  <main id="main-content" class="app-layout pb-16">
+
+    <!-- Page Header -->
+    <div class="mb-10 border-b border-border pb-6">
+      <h1 class="text-3xl font-extrabold sm:text-4xl" style="font-family: var(--font-heading, sans-serif)">
+        <span class="text-foreground">All</span>
+        <span style="background: linear-gradient(135deg, var(--accent), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Tags
+        </span>
+      </h1>
+      <p class="mt-2 text-sm text-muted-text">
+        {tagsWithCount.length} tags · browse by topic
+      </p>
+    </div>
+
+    <!-- Tags as styled chips with count -->
+    <div class="flex flex-wrap gap-3">
+      {tagsWithCount.map(({ tag, tagName, count }) => (
+        <a
+          href={`/tags/${tag}/`}
+          transition:name={tag}
+          class="group inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-muted-text transition-all duration-150 hover:border-accent/50 hover:bg-accent/5 hover:text-accent"
+        >
+          <span class="opacity-50 text-xs">#</span>
+          {tagName}
+          <span class="flex h-4 min-w-4 items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-bold text-muted-text group-hover:bg-accent/15 group-hover:text-accent transition-colors">
+            {count}
+          </span>
+        </a>
+      ))}
+    </div>
+  </main>
   <Footer />
 </Layout>

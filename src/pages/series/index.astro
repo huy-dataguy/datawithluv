@@ -1,0 +1,71 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import getUniqueSeries from "@/utils/getUniqueSeries";
+import getPostsBySeries from "@/utils/getPostsBySeries";
+import { SITE } from "@/config";
+
+const posts = await getCollection("blog");
+const allSeries = getUniqueSeries(posts);
+---
+
+<Layout title={`Series | ${SITE.title}`} description="All the series published on this blog.">
+  <Header />
+  <Breadcrumb />
+  <main id="main-content" class="app-layout pb-16">
+
+    <!-- Page Header -->
+    <div class="mb-10 border-b border-border pb-6">
+      <h1 class="text-3xl font-extrabold sm:text-4xl" style="font-family: var(--font-heading, sans-serif)">
+        <span class="text-foreground">All</span>
+        <span style="background: linear-gradient(135deg, var(--accent), #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Series
+        </span>
+      </h1>
+      <p class="mt-2 text-sm text-muted-text">
+        Grouped articles that cover topics in depth, step by step.
+      </p>
+    </div>
+
+    <!-- Series Cards Grid -->
+    {allSeries.length === 0 ? (
+      <p class="text-muted-text">No series yet. Check back soon!</p>
+    ) : (
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {allSeries.map(({ series, seriesName, count }) => (
+          <a
+            href={`/series/${series}/`}
+            class="group relative flex flex-col rounded-xl border border-border bg-surface p-5 transition-all duration-200 hover:border-accent/60 hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_24px_var(--accent-soft)]"
+          >
+            <!-- Top accent bar -->
+            <div class="absolute inset-x-0 top-0 h-0.5 rounded-t-xl bg-gradient-to-r from-accent/70 to-accent/10 opacity-0 transition-opacity group-hover:opacity-100" />
+
+            <div class="flex items-start justify-between gap-3">
+              <span class="text-2xl">📚</span>
+              <!-- Post count badge -->
+              <span class="flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/15 px-2 text-xs font-bold text-accent">
+                {count}
+              </span>
+            </div>
+
+            <h2 class="mt-3 text-base font-bold text-foreground group-hover:text-accent transition-colors leading-snug">
+              {seriesName}
+            </h2>
+
+            <p class="mt-1 text-xs text-muted-text">
+              {count} {count === 1 ? "article" : "articles"}
+            </p>
+
+            <div class="mt-4 flex items-center gap-1 text-xs font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
+              View series →
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </main>
+  <Footer />
+</Layout>

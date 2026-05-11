@@ -1,39 +1,50 @@
 ---
 import Breadcrumb from "@/components/Breadcrumb.astro";
+import PageHeader from "@/components/PageHeader.astro";
 import { SITE } from "@/config";
 
+type Accent = "amber" | "teal" | "purple";
 type StringTitle = { pageTitle: string };
 type ArrayTitle = { pageTitle: [string, string]; titleTransition: string };
 
-type Props = (StringTitle | ArrayTitle) & { pageDesc?: string };
+type Props = (StringTitle | ArrayTitle) & {
+  pageDesc?: string;
+  accent?: Accent;
+};
 
 const { props } = Astro;
-
 const backUrl = SITE.showBackButton ? Astro.url.pathname : "/";
+
+// Parse title into prefix + keyword for PageHeader
+let prefix: string | undefined;
+let keyword: string;
+let transition: string | undefined;
+
+if ("titleTransition" in props) {
+  [prefix, keyword] = props.pageTitle as [string, string];
+  transition = props.titleTransition;
+} else {
+  keyword = props.pageTitle as string;
+}
+
+const accent: Accent = (props as any).accent ?? "amber";
 ---
 
 <Breadcrumb />
 <main data-backUrl={backUrl} id="main-content" class="app-layout pb-4">
-  {
-    "titleTransition" in props ? (
-      <h1 class="text-2xl font-semibold sm:text-3xl">
-        {props.pageTitle[0]}
-        <span transition:name={props.titleTransition}>
-          {props.pageTitle[1]}
-        </span>
-      </h1>
-    ) : (
-      <h1 class="text-2xl font-semibold sm:text-3xl">{props.pageTitle}</h1>
-    )
-  }
-  <p class="mt-2 mb-6 italic">{props.pageDesc}</p>
+  <PageHeader
+    prefix={prefix}
+    title={keyword}
+    desc={props.pageDesc}
+    accent={accent}
+    titleTransition={transition}
+  />
   <slot />
 </main>
 
 <script>
   document.addEventListener("astro:page-load", () => {
-    const mainContent: HTMLElement | null =
-      document.querySelector("#main-content");
+    const mainContent: HTMLElement | null = document.querySelector("#main-content");
     const backUrl = mainContent?.dataset?.backurl;
     if (backUrl) {
       sessionStorage.setItem("backUrl", backUrl);

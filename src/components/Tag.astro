@@ -5,9 +5,10 @@ type Props = {
   tag: string;
   tagName: string;
   size?: "sm" | "lg";
+  active?: boolean;
 };
 
-const { tag, tagName, size = "lg" } = Astro.props;
+const { tag, tagName, size = "lg", active = false } = Astro.props;
 ---
 
 <li>
@@ -15,19 +16,20 @@ const { tag, tagName, size = "lg" } = Astro.props;
     href={`/tags/${tag}/`}
     transition:name={tag}
     class:list={[
-      "flex items-center gap-0.5",
-      "border-b-2 border-dashed border-foreground",
-      "hover:-mt-0.5 hover:border-accent hover:text-accent",
-      "focus-visible:border-none focus-visible:text-accent",
+      "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-medium transition-all duration-150",
+      // Default: neutral pill
+      !active && "border-border text-muted-text hover:border-accent/50 hover:text-accent hover:bg-accent/5",
+      // Active: amber filled pill
+      active && "border-accent bg-accent/15 text-accent",
       { "text-sm": size === "sm" },
-      { "text-lg": size === "lg" },
+      { "text-base": size === "lg" },
     ]}
   >
     <IconHash
       class:list={[
-        "opacity-80",
-        { "size-5": size === "lg" },
-        { "size-4": size === "sm" },
+        "opacity-60",
+        { "size-3.5": size === "lg" },
+        { "size-3": size === "sm" },
       ]}
     />
     {tagName}

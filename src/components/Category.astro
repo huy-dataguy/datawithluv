@@ -1,0 +1,28 @@
+---
+type Props = {
+  category: string;
+  categoryName: string;
+  size?: "sm" | "lg";
+  active?: boolean;
+};
+
+const { category, categoryName, size = "lg", active = false } = Astro.props;
+---
+
+<li>
+  <a
+    href={`/categories/${category}/`}
+    transition:name={category}
+    class:list={[
+      "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-medium transition-all duration-150",
+      // Default state
+      !active && "border-border text-muted-text hover:border-accent/60 hover:text-accent hover:bg-accent/5",
+      // Active (current page) state — amber filled
+      active && "border-accent bg-accent/15 text-accent",
+      { "text-sm": size === "sm" },
+      { "text-base": size === "lg" },
+    ]}
+  >
+    📁 {categoryName}
+  </a>
+</li>

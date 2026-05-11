@@ -3,43 +3,108 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* ============================================================
+   "Midnight Amber" Design System
+   Inspired by: Anonystick (Gold accent, deep dark bg)
+              + ThanhTungUet/Chirpy (Navy-tinted dark, structured)
+              + Sat Naing (Warm light bg, teal secondary)
+   ============================================================ */
+
 :root,
 html[data-theme="light"] {
-  --background: #fdfdfd;
-  --foreground: #282728;
-  --accent: #006cac;
-  --muted: #e6e6e6;
-  --border: #ece9e9;
+  /* Backgrounds — warm cream inspired by Sat Naing */
+  --background: #f7f5f0;
+  --surface: #ffffff;
+  --surface-elevated: #eeeae0;
+
+  /* Text */
+  --foreground: #1a1d2e;
+  --muted-text: #6b7280;
+
+  /* Accent: Amber/Gold (darker for light mode readability) */
+  --accent: #c47d0a;
+  --accent-hover: #a36708;
+  --accent-soft: #f0a83218;
+
+  /* Secondary accent: Teal (learned from Sat Naing) */
+  --teal: #0d9488;
+
+  /* Borders */
+  --border: #e2ddd4;
+  --border-strong: #c8c2b4;
+
+  /* Muted (for tags, chips) */
+  --muted: #e8e4da;
 }
 
 html[data-theme="dark"] {
-  --background: #212737;
-  --foreground: #eaedf3;
-  --accent: #ff6b01;
-  --muted: #343f60;
-  --border: #ab4b08;
+  /* Backgrounds — Softer, more premium dark slate */
+  --background: #181a20;
+  --surface: #22252e;
+  --surface-elevated: #2d313c;
+
+  /* Text */
+  --foreground: #e2e8f0;
+  --muted-text: #8b94a5;
+
+  /* Accent: Gold/Amber — the hero color */
+  --accent: #f0a832;
+  --accent-hover: #f5bc56;
+  --accent-soft: #f0a8321a;
+
+  /* Secondary accent: Teal */
+  --teal: #2dd4bf;
+
+  /* Borders */
+  --border: #303440;
+  --border-strong: #404555;
+
+  /* Muted */
+  --muted: #2d313c;
+}
+
+/* Premium edge light ray / ambient glow effect for dark mode */
+html[data-theme="dark"] body {
+  background-image: radial-gradient(
+    ellipse 80% 50% at 50% -20%,
+    color-mix(in srgb, var(--accent) 15%, transparent),
+    transparent
+  );
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 @theme inline {
-  --font-app: var(--font-google-sans-code);
+  --font-app: var(--font-inter);
+  --font-heading: var(--font-jakarta);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-teal: var(--teal);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-muted-text: var(--muted-text);
 }
 
 @layer base {
   * {
     @apply border-border outline-accent/75;
-    scrollbar-width: auto;
-    scrollbar-color: var(--color-muted) transparent;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
   }
   html {
     @apply overflow-y-scroll scroll-smooth;
   }
   body {
-    @apply flex min-h-svh flex-col bg-background font-app text-foreground selection:bg-accent/75 selection:text-background;
+    @apply flex min-h-svh flex-col bg-background font-app text-foreground;
+    @apply selection:bg-accent/80 selection:text-background;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading, var(--font-inter, sans-serif));
   }
   a,
   button {
@@ -48,6 +113,11 @@ html[data-theme="dark"] {
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* Smooth transitions for theme switch */
+  body, header, nav, main, section, aside, footer, div, article {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
   }
 }
 
@@ -59,12 +129,53 @@ html[data-theme="dark"] {
   @apply mx-auto w-full max-w-app px-4;
 }
 
-.active-nav {
-  @apply underline decoration-wavy decoration-2 underline-offset-8;
+/* ===== NAV BAR — Interactive States ===== */
+
+/* Hover: amber text, subtle amber bg pill */
+[id="menu-items"] li a {
+  border-radius: 0.5rem;
+  color: var(--foreground);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+[id="menu-items"] li a:hover {
+  color: var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
-/* Source: https://piccalil.li/blog/a-more-modern-css-reset/ */
-/* Anything that has been anchored to should have extra scroll margin */
+/* Active: amber text + stronger amber bg */
+.active-nav {
+  color: var(--accent) !important;
+  background-color: color-mix(in srgb, var(--accent) 15%, transparent) !important;
+  font-weight: 600;
+}
+
+/* Gold section divider — inspired by Anonystick */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--accent), transparent);
+  opacity: 0.6;
+}
+
+/* Card hover glow */
+.post-card-hover {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.post-card-hover:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft), 0 4px 24px var(--accent-soft);
+  transform: translateY(-1px);
+}
+
+/* Scroll margin */
 :target {
   scroll-margin-block: 1rem;
 }
