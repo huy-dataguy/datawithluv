@@ -3,28 +3,31 @@ layout: ../layouts/AboutLayout.astro
 title: "About Me"
 ---
 
-Hi, I'm Huy, a Full-Stack Developer and System Architect.
+Hi, I'm **Quoc Huy**, a Data Engineering student at **HCMC University of Technology and Education (HCM-UTE)**, graduating in late 2026.
 
-I specialize in building high-performance backend systems, architecting scalable microservices, and developing beautiful, responsive frontend interfaces. 
+I'm passionate about building scalable, reliable data infrastructures and bridging the gap between raw data and actionable AI insights.
 
-My current tech stack revolves around:
-- **Backend:** Node.js, Go, Python, PostgreSQL, Redis, Kafka
-- **Frontend:** Astro, Next.js, React, Tailwind CSS
-- **DevOps:** Docker, Kubernetes, Linux, CI/CD
+## What I Do
 
-## Experience
+I focus on mastering **Data Warehousing**, **Medallion Lakehouse architecture**, and **real-time processing**:
 
-### Software Engineer - Tech Company
-*2020 - Present*
-- Architected a highly concurrent microservices system using Go and Kafka.
-- Optimized MySQL queries reducing latency by 40%.
-- Developed a fast and accessible web interface using Next.js.
+- **Batch & Streaming Pipelines** — Spark, Kafka, Iceberg, Airflow
+- **Data Lakehouse & Warehouse** — Bronze/Silver/Gold layers, Trino, Superset
+- **Real-Time Analytics** — PySpark Structured Streaming, PostgreSQL time-series
+- **AI & RAG** — Gemini + ChromaDB for natural language querying
 
-## Projects
+## Tech Stack
 
-- **FinApp Dashboard**: A robust data visualization tool for financial metrics.
-- **Vovinam Management**: A full-featured role-based access management system for a martial arts club.
+- **Data:** Python, SQL, Apache Spark (PySpark), Kafka, Apache Iceberg, Hadoop YARN, Airflow, Trino
+- **AI/ML:** Gemini API, RAG systems, MoViNet (action recognition)
+- **Storage:** PostgreSQL, MongoDB, ChromaDB
+- **DevOps:** Docker, Git, Linux
+- **Visualization:** Superset
+- **Full-Stack:** React, Node.js, Express, Tailwind CSS
 
-## Let's Connect
+## Featured Projects
 
-Feel free to reach out to me via my social media links below.
+- **Smart Security Monitoring System** — Real-time violence detection pipeline using MoViNet, Spark, and Iceberg with a Gemini-ChromaDB RAG assistant for natural language querying of security incidents.
+- **Reddit Streaming Lakehouse** — End-to-end pipeline ingesting Reddit data via Kafka, processing with Spark (Bronze → Silver → Gold), orchestrated by Airflow, with Trino for distributed SQL analytics and Superset dashboards.
+- **Real-Time Financial Analytics** — Processing Binance WebSocket streams using PySpark Structured Streaming and Kafka, with PostgreSQL optimized for high-throughput time-series writes.
+- **Spark Cluster on YARN** — Docker-based multi-node Spark cluster deployment on Hadoop YARN for distributed data processing.
