@@ -1,4 +1,4 @@
-#Quoc Huy's Blog
+# Quoc Huy's Blog
 
 Personal blog.
 
@@ -11,18 +11,18 @@ pnpm install
 pnpm run dev
 ```
 
-Blog sẽ chạy tại `http://localhost:4321`.
+The blog will be available at `http://localhost:4321`.
 
 ## Commands
 
-| Command            | Action                                 |
-| :----------------- | :------------------------------------- |
-| `pnpm install`     | Cài dependencies                       |
-| `pnpm run dev`     | Chạy dev server tại `localhost:4321`   |
-| `pnpm run build`   | Build production site ra `./dist/`     |
-| `pnpm run preview` | Preview build locally trước khi deploy |
-| `pnpm run format`  | Format code với Prettier               |
-| `pnpm run lint`    | Lint với ESLint                        |
+| Command            | Action                                      |
+| :----------------- | :------------------------------------------ |
+| `pnpm install`     | Install dependencies                        |
+| `pnpm run dev`     | Start dev server at `localhost:4321`        |
+| `pnpm run build`   | Build production site to `./dist/`          |
+| `pnpm run preview` | Preview build locally before deploying      |
+| `pnpm run format`  | Format code with Prettier                   |
+| `pnpm run lint`    | Lint with ESLint                            |
 
 ## Tech Stack
 
