@@ -35,7 +35,7 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
                 Hi, I'm <span class="text-accent">Quoc Huy</span> 👋
               </h1>
               <p class="mt-1 text-sm font-medium text-muted-text">
-                Full-Stack Developer · System Design · Backend Architect
+                Data Engineering · Big Data · Real-time Processing
               </p>
             </div>
             <a
@@ -55,12 +55,13 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           </div>
 
           <p class="mt-4 max-w-xl text-sm leading-relaxed text-muted-text">
-            I build high-performance backend systems, scalable microservices,
-            and clean frontend interfaces. I write about{" "}
-            <span class="font-semibold text-accent">System Design</span>,{" "}
-            <span class="font-semibold text-accent">Go</span>,{" "}
-            <span class="font-semibold text-accent">Node.js</span>, and modern
-            web stacks.
+            A space where I document what I learn and research about{" "}
+            <span class="font-semibold text-accent">Data Engineering</span>,{
+              " "
+            }
+            <span class="font-semibold text-accent">Big Data</span>, and{" "}
+            <span class="font-semibold text-accent">Real-time Processing</span>,
+            and other random stuff.
           </p>
 
           {
@@ -82,19 +83,21 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
           </div>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <a
-              href="#"
+              href="https://github.com/huy-dataguy/smart-security-monitoring"
+              target="_blank"
               class="group block rounded-lg border border-border bg-surface p-4 transition-all duration-200 hover:border-accent/60 hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_20px_var(--accent-soft)]"
             >
               <h3 class="text-sm font-bold text-accent group-hover:underline">
-                FinApp Dashboard
+                Smart Security Monitoring
               </h3>
               <p class="mt-1.5 text-xs leading-relaxed text-muted-text">
-                A scalable financial dashboard built with Next.js & Prisma,
-                handling high concurrency with real-time analytics.
+                Real-time violence detection pipeline using MoViNet, Spark, and
+                Iceberg with a Gemini-ChromaDB RAG assistant for natural
+                language querying of security incidents.
               </p>
               <div class="mt-3 flex flex-wrap gap-1.5">
                 {
-                  ["Next.js", "TypeScript", "Prisma"].map(t => (
+                  ["Spark", "Kafka", "Iceberg", "RAG"].map(t => (
                     <span class="rounded-full border border-border px-2 py-0.5 text-xs text-muted-text">
                       {t}
                     </span>
@@ -103,19 +106,21 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
               </div>
             </a>
             <a
-              href="#"
+              href="https://github.com/huy-dataguy/reddit-streaming-lakehouse"
+              target="_blank"
               class="group block rounded-lg border border-border bg-surface p-4 transition-all duration-200 hover:border-accent/60 hover:shadow-[0_0_0_1px_var(--accent-soft),0_4px_20px_var(--accent-soft)]"
             >
               <h3 class="text-sm font-bold text-accent group-hover:underline">
-                Vovinam Management
+                Reddit Streaming Lakehouse
               </h3>
               <p class="mt-1.5 text-xs leading-relaxed text-muted-text">
-                Full-featured personnel management system with RBAC, real-time
-                syncing, and Google auth.
+                End-to-end Reddit data pipeline with Kafka, Spark
+                (Bronze-Silver-Gold), Airflow orchestration, and Trino for
+                distributed SQL analytics.
               </p>
               <div class="mt-3 flex flex-wrap gap-1.5">
                 {
-                  ["Next.js", "Supabase", "PostgreSQL"].map(t => (
+                  ["Kafka", "Spark", "Airflow", "Trino"].map(t => (
                     <span class="rounded-full border border-border px-2 py-0.5 text-xs text-muted-text">
                       {t}
                     </span>

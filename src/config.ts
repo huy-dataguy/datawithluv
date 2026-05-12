@@ -1,9 +1,9 @@
 export const SITE = {
   website: "https://your-domain.com/", // replace this with your deployed domain
-  author: "Huy",
+  author: "Quoc Huy",
   profile: "https://github.com/huy-dataguy",
-  desc: "Personal blog discussing Backend, System Design, and Modern Web Development.",
-  title: "Huy's Tech Blog",
+  desc: "Data Engineering blog — building scalable pipelines, real-time streaming systems, and modern data architectures.",
+  title: "Quoc Huy's Blog",
   ogImage: "astropaper-og.jpg",
   lightAndDarkMode: true,
   postPerIndex: 5,
