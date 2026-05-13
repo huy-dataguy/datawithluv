@@ -332,12 +332,24 @@ import Main from "@/layouts/Main.astro";
   }
 </style>
 
-<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script is:inline src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+  function loadScript(src: string) {
+    return new Promise<void>((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.onload = () => resolve();
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
 
-<script is:inline>
-(function() {
-  "use strict";
+  await loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js");
+  await loadScript("https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js");
+
+  const pdfjsLib = (window as any).pdfjsLib;
+  const PDFLib = (window as any).PDFLib;
+
+  {
 
   var pdfDoc = null;
   var pdfBytes = null;
@@ -960,5 +972,6 @@ import Main from "@/layouts/Main.astro";
     }
   });
 
-})();
+}
 </script>
+
