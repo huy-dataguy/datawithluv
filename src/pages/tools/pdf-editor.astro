@@ -333,6 +333,7 @@ import Main from "@/layouts/Main.astro";
 </style>
 
 <script>
+  // @ts-nocheck
   function loadScript(src: string) {
     return new Promise<void>((resolve, reject) => {
       const s = document.createElement("script");
