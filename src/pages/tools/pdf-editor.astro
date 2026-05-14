@@ -17,6 +17,7 @@ import Main from "@/layouts/Main.astro";
 
     <!-- Editor State -->
     <div id="editor-area">
+      <div class="sticky-header">
       <!-- Toolbar -->
       <div class="toolbar">
         <div class="tool-group">
@@ -119,6 +120,7 @@ import Main from "@/layouts/Main.astro";
           Save PDF
         </button>
       </div>
+      </div>
 
       <!-- Canvas Viewport -->
       <div class="canvas-viewport" id="canvas-viewport">
@@ -176,8 +178,14 @@ import Main from "@/layouts/Main.astro";
     display: none;
     flex-direction: column;
     gap: 0.5rem;
-    height: calc(100vh - 200px);
-    overflow: hidden;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--surface, #fff);
+    padding-top: 0.5rem;
   }
 
   .toolbar {
@@ -275,8 +283,7 @@ import Main from "@/layouts/Main.astro";
     border-radius: 0.5rem;
     border: 1px solid var(--border);
     background: color-mix(in srgb, var(--foreground) 5%, transparent);
-    flex: 1;
-    min-height: 400px;
+    height: calc(100vh - 130px);
     position: relative;
   }
 
