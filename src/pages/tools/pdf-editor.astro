@@ -295,27 +295,27 @@ import Main from "@/layouts/Main.astro";
     padding: 1rem;
   }
 
-  .page-wrapper {
+  :global(.page-wrapper) {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  .page-label {
+  :global(.page-label) {
     font-size: 0.7rem;
     color: var(--foreground-muted, #888);
     padding: 0.25rem 0 0.375rem;
   }
 
-  .page-canvas-wrap {
+  :global(.page-canvas-wrap) {
     position: relative;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     border-radius: 2px;
   }
 
-  .page-canvas-wrap .pdf-canvas { display: block; }
+  :global(.page-canvas-wrap .pdf-canvas) { display: block; }
 
-  .page-canvas-wrap .annot-canvas {
+  :global(.page-canvas-wrap .annot-canvas) {
     position: absolute;
     top: 0;
     left: 0;
