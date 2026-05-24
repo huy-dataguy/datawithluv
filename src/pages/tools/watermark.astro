@@ -1,0 +1,687 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Main from "@/layouts/Main.astro";
+---
+
+<Layout title="Watermark Tool | Quoc Huy's Blog" description="Add logo watermark to images - protect your photos for social media">
+  <Main pageTitle="Watermark" pageDesc="Gắn logo lên ảnh để bảo vệ bản quyền khi đăng mạng xã hội. Chạy hoàn toàn trên trình duyệt.">
+    <div id="wm-app">
+      <!-- Upload row -->
+      <div class="upload-row">
+        <label class="upload-card">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          <span class="upload-label">Ảnh gốc</span>
+          <span class="upload-hint">Click hoặc kéo thả</span>
+          <input type="file" id="img-upload" accept="image/*" class="sr-only" />
+        </label>
+        <label class="upload-card">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span class="upload-label">Logo</span>
+          <span class="upload-hint">PNG trong suốt khuyên dùng</span>
+          <input type="file" id="logo-upload" accept="image/*" class="sr-only" />
+        </label>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-bar" id="controls" style="display:none">
+        <div class="control-group">
+          <label>Kích thước logo</label>
+          <div class="slider-row">
+            <input type="range" id="logo-size" min="5" max="80" value="20" />
+            <span id="size-val">20%</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Độ trong suốt</label>
+          <div class="slider-row">
+            <input type="range" id="logo-opacity" min="10" max="100" value="70" />
+            <span id="opacity-val">70%</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Vị trí nhanh</label>
+          <div class="pos-grid">
+            <button class="pos-btn" data-pos="top-left" title="Trên trái">&#8598;</button>
+            <button class="pos-btn active" data-pos="top-center" title="Trên giữa">&#8593;</button>
+            <button class="pos-btn" data-pos="top-right" title="Trên phải">&#8599;</button>
+            <button class="pos-btn" data-pos="mid-left" title="Giữa trái">&#8592;</button>
+            <button class="pos-btn" data-pos="mid-center" title="Giữa giữa">&#8226;</button>
+            <button class="pos-btn" data-pos="mid-right" title="Giữa phải">&#8594;</button>
+            <button class="pos-btn" data-pos="bot-left" title="Dưới trái">&#8601;</button>
+            <button class="pos-btn" data-pos="bot-center" title="Dưới giữa">&#8595;</button>
+            <button class="pos-btn" data-pos="bot-right" title="Dưới phải">&#8600;</button>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="control-group">
+          <label>Lặp logo (tile)</label>
+          <label class="toggle">
+            <input type="checkbox" id="tile-mode" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="control-group" id="tile-spacing-group" style="display:none">
+          <label>Khoảng cách</label>
+          <div class="slider-row">
+            <input type="range" id="tile-spacing" min="0" max="300" value="100" />
+            <span id="spacing-val">100px</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Xoay logo</label>
+          <div class="slider-row">
+            <input type="range" id="logo-rotate" min="-180" max="180" value="0" />
+            <span id="rotate-val">0°</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="canvas-area" id="canvas-area" style="display:none">
+        <canvas id="main-canvas"></canvas>
+      </div>
+
+      <!-- Action bar -->
+      <div class="action-bar" id="action-bar" style="display:none">
+        <span class="drag-hint">Kéo logo trên ảnh để di chuyển</span>
+        <div class="action-spacer"></div>
+        <button class="secondary-btn" id="btn-reset">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset
+        </button>
+        <select id="format-select" class="format-select">
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+        </select>
+        <button class="primary-btn" id="btn-download">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          Tải về
+        </button>
+      </div>
+    </div>
+  </Main>
+</Layout>
+
+<style>
+  :global(#wm-app) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Upload row */
+  .upload-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .upload-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    border: 2px dashed var(--border);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+    color: var(--foreground-muted, #888);
+    background: var(--surface, #fff);
+  }
+
+  .upload-card:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .upload-card.has-file {
+    border-style: solid;
+    border-color: #22c55e;
+    color: #22c55e;
+  }
+
+  .upload-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .upload-hint {
+    font-size: 0.7rem;
+  }
+
+  /* Controls bar */
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .control-group > label {
+    font-size: 0.7rem;
+    color: var(--foreground-muted, #888);
+    font-weight: 500;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .slider-row span {
+    font-size: 0.7rem;
+    color: var(--foreground-muted, #888);
+    min-width: 3rem;
+  }
+
+  .slider-row input[type="range"] {
+    width: 5rem;
+  }
+
+  .sep {
+    width: 1px;
+    height: 3.5rem;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  /* Position grid */
+  .pos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .pos-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--foreground-muted, #888);
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+  }
+
+  .pos-btn:hover {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+  }
+
+  .pos-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--border);
+    border-radius: 999px;
+    transition: 0.2s;
+  }
+
+  .toggle-slider::before {
+    content: "";
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+
+  .toggle input:checked + .toggle-slider {
+    background: var(--accent);
+  }
+
+  .toggle input:checked + .toggle-slider::before {
+    transform: translateX(16px);
+  }
+
+  /* Canvas area */
+  .canvas-area {
+    position: relative;
+    overflow: auto;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--foreground) 3%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem;
+  }
+
+  #main-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Action bar */
+  .action-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+  }
+
+  .action-spacer {
+    flex: 1;
+  }
+
+  .drag-hint {
+    font-size: 0.7rem;
+    color: var(--foreground-muted, #888);
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+
+  .primary-btn {
+    background: var(--accent);
+    color: white;
+  }
+
+  .primary-btn svg {
+    stroke: white;
+  }
+
+  .primary-btn:hover {
+    opacity: 0.9;
+  }
+
+  .secondary-btn {
+    background: color-mix(in srgb, var(--foreground) 10%, transparent);
+    color: var(--foreground);
+  }
+
+  .secondary-btn:hover {
+    background: color-mix(in srgb, var(--foreground) 18%, transparent);
+  }
+
+  .format-select {
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--border);
+    background: var(--surface, #fff);
+    color: var(--foreground);
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  /* Drop zone highlight */
+  .upload-card.drag-over {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    .upload-row {
+      grid-template-columns: 1fr;
+    }
+    .drag-hint {
+      display: none;
+    }
+    .controls-bar {
+      gap: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d")!;
+  const controls = document.getElementById("controls")!;
+  const canvasArea = document.getElementById("canvas-area")!;
+  const actionBar = document.getElementById("action-bar")!;
+  const imgUpload = document.getElementById("img-upload") as HTMLInputElement;
+  const logoUpload = document.getElementById("logo-upload") as HTMLInputElement;
+  const sizeSlider = document.getElementById("logo-size") as HTMLInputElement;
+  const opacitySlider = document.getElementById("logo-opacity") as HTMLInputElement;
+  const rotateSlider = document.getElementById("logo-rotate") as HTMLInputElement;
+  const tileToggle = document.getElementById("tile-mode") as HTMLInputElement;
+  const tileSpacingSlider = document.getElementById("tile-spacing") as HTMLInputElement;
+  const tileSpacingGroup = document.getElementById("tile-spacing-group")!;
+
+  let srcImg: HTMLImageElement | null = null;
+  let logoImg: HTMLImageElement | null = null;
+
+  // Logo placement (in canvas coords)
+  let logoX = 0;
+  let logoY = 0;
+  let logoW = 0;
+  let logoH = 0;
+  let dragging = false;
+  let dragOffX = 0;
+  let dragOffY = 0;
+
+  function render() {
+    if (!srcImg) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(srcImg, 0, 0, canvas.width, canvas.height);
+
+    if (!logoImg) return;
+
+    const sizePct = Number(sizeSlider.value) / 100;
+    const opacity = Number(opacitySlider.value) / 100;
+    const rotate = Number(rotateSlider.value) * (Math.PI / 180);
+    const tile = tileToggle.checked;
+    const spacing = Number(tileSpacingSlider.value);
+
+    logoW = canvas.width * sizePct;
+    const ratio = logoImg.naturalHeight / logoImg.naturalWidth;
+    logoH = logoW * ratio;
+
+    ctx.globalAlpha = opacity;
+
+    if (tile) {
+      const stepX = logoW + spacing;
+      const stepY = logoH + spacing;
+      for (let y = -logoH; y < canvas.height + logoH; y += stepY) {
+        for (let x = -logoW; x < canvas.width + logoW; x += stepX) {
+          drawLogo(x, y, logoW, logoH, rotate);
+        }
+      }
+    } else {
+      drawLogo(logoX, logoY, logoW, logoH, rotate);
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function drawLogo(x: number, y: number, w: number, h: number, angle: number) {
+    if (!logoImg) return;
+    ctx.save();
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.drawImage(logoImg, -w / 2, -h / 2, w, h);
+    ctx.restore();
+  }
+
+  function setLogoPosition(pos: string) {
+    if (!srcImg || !logoImg) return;
+    const pad = canvas.width * 0.03;
+    const sizePct = Number(sizeSlider.value) / 100;
+    const w = canvas.width * sizePct;
+    const r = logoImg.naturalHeight / logoImg.naturalWidth;
+    const h = w * r;
+
+    const positions: Record<string, [number, number]> = {
+      "top-left":    [pad, pad],
+      "top-center":  [(canvas.width - w) / 2, pad],
+      "top-right":   [canvas.width - w - pad, pad],
+      "mid-left":    [pad, (canvas.height - h) / 2],
+      "mid-center":  [(canvas.width - w) / 2, (canvas.height - h) / 2],
+      "mid-right":   [canvas.width - w - pad, (canvas.height - h) / 2],
+      "bot-left":    [pad, canvas.height - h - pad],
+      "bot-center":  [(canvas.width - w) / 2, canvas.height - h - pad],
+      "bot-right":   [canvas.width - w - pad, canvas.height - h - pad],
+    };
+
+    const p = positions[pos];
+    if (p) { logoX = p[0]; logoY = p[1]; }
+    render();
+  }
+
+  function loadImage(file: File, cb: (img: HTMLImageElement) => void) {
+    const img = new Image();
+    img.onload = () => { cb(img); URL.revokeObjectURL(img.src); };
+    img.src = URL.createObjectURL(file);
+  }
+
+  function showEditor() {
+    controls.style.display = "";
+    canvasArea.style.display = "";
+    actionBar.style.display = "";
+  }
+
+  // --- Upload handlers ---
+
+  function setupUpload(input: HTMLInputElement, cardSelector: string, onLoad: (img: HTMLImageElement) => void) {
+    const card = input.closest(".upload-card")! as HTMLElement;
+    input.addEventListener("change", () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      loadImage(file, (img) => {
+        card.classList.add("has-file");
+        onLoad(img);
+      });
+    });
+    card.addEventListener("dragover", (e: DragEvent) => { e.preventDefault(); card.classList.add("drag-over"); });
+    card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
+    card.addEventListener("drop", (e: DragEvent) => {
+      e.preventDefault();
+      card.classList.remove("drag-over");
+      const file = e.dataTransfer?.files[0];
+      if (!file || !file.type.startsWith("image/")) return;
+      loadImage(file, (img) => {
+        card.classList.add("has-file");
+        onLoad(img);
+      });
+    });
+  }
+
+  setupUpload(imgUpload, ".upload-card:first-child", (img) => {
+    srcImg = img;
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    showEditor();
+    // Default position: top-center
+    setLogoPosition("top-center");
+    render();
+  });
+
+  setupUpload(logoUpload, ".upload-card:last-child", (img) => {
+    logoImg = img;
+    if (srcImg) {
+      showEditor();
+      setLogoPosition("top-center");
+      render();
+    }
+  });
+
+  // --- Slider handlers ---
+
+  sizeSlider.addEventListener("input", () => {
+    document.getElementById("size-val")!.textContent = sizeSlider.value + "%";
+    // Recalculate position based on active pos
+    const active = document.querySelector(".pos-btn.active") as HTMLElement;
+    if (active && !tileToggle.checked) setLogoPosition(active.dataset.pos!);
+    else render();
+  });
+
+  opacitySlider.addEventListener("input", () => {
+    document.getElementById("opacity-val")!.textContent = opacitySlider.value + "%";
+    render();
+  });
+
+  rotateSlider.addEventListener("input", () => {
+    document.getElementById("rotate-val")!.textContent = rotateSlider.value + "°";
+    render();
+  });
+
+  tileToggle.addEventListener("change", () => {
+    tileSpacingGroup.style.display = tileToggle.checked ? "" : "none";
+    render();
+  });
+
+  tileSpacingSlider.addEventListener("input", () => {
+    document.getElementById("spacing-val")!.textContent = tileSpacingSlider.value + "px";
+    render();
+  });
+
+  // --- Position buttons ---
+
+  const posBtns = document.querySelectorAll<HTMLButtonElement>(".pos-btn");
+  posBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      posBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      if (!tileToggle.checked) setLogoPosition(btn.dataset.pos!);
+    });
+  });
+
+  // --- Drag logo on canvas ---
+
+  function getCanvasPos(e: MouseEvent | TouchEvent) {
+    const rect = canvas.getBoundingClientRect();
+    const sx = canvas.width / rect.width;
+    const sy = canvas.height / rect.height;
+    const cx = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const cy = "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+    return { x: (cx - rect.left) * sx, y: (cy - rect.top) * sy };
+  }
+
+  function isOnLogo(px: number, py: number): boolean {
+    return px >= logoX && px <= logoX + logoW && py >= logoY && py <= logoY + logoH;
+  }
+
+  canvas.addEventListener("mousedown", (e) => {
+    if (tileToggle.checked) return;
+    const p = getCanvasPos(e);
+    if (logoImg && isOnLogo(p.x, p.y)) {
+      dragging = true;
+      dragOffX = p.x - logoX;
+      dragOffY = p.y - logoY;
+      canvas.style.cursor = "grabbing";
+    }
+  });
+
+  canvas.addEventListener("mousemove", (e) => {
+    if (!logoImg || tileToggle.checked) return;
+    const p = getCanvasPos(e);
+    if (dragging) {
+      logoX = p.x - dragOffX;
+      logoY = p.y - dragOffY;
+      render();
+    } else {
+      canvas.style.cursor = isOnLogo(p.x, p.y) ? "grab" : "default";
+    }
+  });
+
+  canvas.addEventListener("mouseup", () => { dragging = false; canvas.style.cursor = "default"; });
+  canvas.addEventListener("mouseleave", () => { dragging = false; });
+
+  // Touch support
+  canvas.addEventListener("touchstart", (e) => {
+    if (tileToggle.checked) return;
+    const p = getCanvasPos(e);
+    if (logoImg && isOnLogo(p.x, p.y)) {
+      e.preventDefault();
+      dragging = true;
+      dragOffX = p.x - logoX;
+      dragOffY = p.y - logoY;
+    }
+  }, { passive: false });
+
+  canvas.addEventListener("touchmove", (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const p = getCanvasPos(e);
+    logoX = p.x - dragOffX;
+    logoY = p.y - dragOffY;
+    render();
+  }, { passive: false });
+
+  canvas.addEventListener("touchend", () => { dragging = false; });
+
+  // --- Actions ---
+
+  document.getElementById("btn-reset")!.addEventListener("click", () => {
+    srcImg = null;
+    logoImg = null;
+    imgUpload.value = "";
+    logoUpload.value = "";
+    document.querySelectorAll(".upload-card").forEach((c) => c.classList.remove("has-file"));
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    controls.style.display = "none";
+    canvasArea.style.display = "none";
+    actionBar.style.display = "none";
+    sizeSlider.value = "20";
+    opacitySlider.value = "70";
+    rotateSlider.value = "0";
+    tileToggle.checked = false;
+    tileSpacingSlider.value = "100";
+    document.getElementById("size-val")!.textContent = "20%";
+    document.getElementById("opacity-val")!.textContent = "70%";
+    document.getElementById("rotate-val")!.textContent = "0°";
+    document.getElementById("spacing-val")!.textContent = "100px";
+    tileSpacingGroup.style.display = "none";
+    posBtns.forEach((b) => b.classList.remove("active"));
+    document.querySelector('[data-pos="top-center"]')!.classList.add("active");
+  });
+
+  const formatSelect = document.getElementById("format-select") as HTMLSelectElement;
+
+  document.getElementById("btn-download")!.addEventListener("click", () => {
+    const format = formatSelect.value;
+    const mime = format === "jpeg" ? "image/jpeg" : "image/png";
+    const ext = format === "jpeg" ? "jpg" : "png";
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.download = `watermarked-${Date.now()}.${ext}`;
+      a.href = url;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, mime, 0.92);
+  });
+</script>

@@ -30,6 +30,10 @@ import Main from "@/layouts/Main.astro";
           <button class="tool-btn" data-tool="eraser" title="Eraser (E)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
           </button>
+          <div class="sep"></div>
+          <button class="tool-btn" data-tool="crop" title="Crop (X)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+          </button>
         </div>
 
         <div class="sep"></div>
@@ -73,6 +77,11 @@ import Main from "@/layouts/Main.astro";
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
           <span>Clear</span>
         </button>
+        <div id="crop-actions" style="display:none" class="crop-actions">
+          <span class="crop-hint">Vùng chọn crop</span>
+          <button class="action-btn danger" id="btn-crop-cancel">Cancel</button>
+          <button class="action-btn" id="btn-crop-apply" style="color:#22c55e">Apply Crop</button>
+        </div>
         <div class="action-spacer"></div>
         <span class="paste-hint">Ctrl+V to paste</span>
         <button class="secondary-btn" id="btn-download" title="Download PNG">
@@ -258,6 +267,18 @@ import Main from "@/layouts/Main.astro";
     color: var(--foreground-muted, #888);
   }
 
+  .crop-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .crop-hint {
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
   .primary-btn,
   .secondary-btn {
     display: flex;
@@ -338,6 +359,9 @@ import Main from "@/layouts/Main.astro";
     .action-btn span {
       display: none;
     }
+    .crop-hint {
+      display: none;
+    }
     .paste-hint {
       display: none;
     }
@@ -360,7 +384,7 @@ import Main from "@/layouts/Main.astro";
 
   const ctx = mainCanvas.getContext("2d")!;
 
-  type Tool = "pen" | "rectangle" | "circle" | "arrow" | "text" | "blur" | "eraser";
+  type Tool = "pen" | "rectangle" | "circle" | "arrow" | "text" | "blur" | "eraser" | "crop";
   let currentTool: Tool = "pen";
   let color = "#ef4444";
   let brushSize = 3;
@@ -372,6 +396,9 @@ import Main from "@/layouts/Main.astro";
 
   let history: ImageData[] = [];
   let historyIdx = -1;
+
+  // Crop state
+  let cropSelX1 = 0, cropSelY1 = 0, cropSelX2 = 0, cropSelY2 = 0;
 
   function pushHistory() {
     const data = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
@@ -472,8 +499,72 @@ import Main from "@/layouts/Main.astro";
     pushHistory();
   }
 
+  function drawCropPreview() {
+    restoreLast();
+    const x = Math.min(cropSelX1, cropSelX2);
+    const y = Math.min(cropSelY1, cropSelY2);
+    const w = Math.abs(cropSelX2 - cropSelX1);
+    const h = Math.abs(cropSelY2 - cropSelY1);
+    if (w < 2 || h < 2) return;
+    // Dim overlay on entire canvas
+    ctx.fillStyle = "rgba(0,0,0,0.4)";
+    ctx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+    // Redraw original content inside selection
+    if (history[historyIdx]) {
+      const selCanvas = document.createElement("canvas");
+      selCanvas.width = mainCanvas.width;
+      selCanvas.height = mainCanvas.height;
+      const selCtx = selCanvas.getContext("2d")!;
+      selCtx.putImageData(history[historyIdx], 0, 0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.clip();
+      ctx.drawImage(selCanvas, 0, 0);
+      ctx.restore();
+    }
+    // Dashed border
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+    ctx.setLineDash([]);
+  }
+
+  function cancelCrop() {
+    restoreLast();
+    (document.getElementById("crop-actions") as HTMLElement).style.display = "none";
+  }
+
+  function applyCrop() {
+    const x = Math.round(Math.min(cropSelX1, cropSelX2));
+    const y = Math.round(Math.min(cropSelY1, cropSelY2));
+    const w = Math.round(Math.abs(cropSelX2 - cropSelX1));
+    const h = Math.round(Math.abs(cropSelY2 - cropSelY1));
+    if (w < 10 || h < 10) { cancelCrop(); return; }
+    // Clamp
+    const cx = Math.max(0, Math.min(x, mainCanvas.width));
+    const cy = Math.max(0, Math.min(y, mainCanvas.height));
+    const cw = Math.min(w, mainCanvas.width - cx);
+    const ch = Math.min(h, mainCanvas.height - cy);
+    // Get cropped region from history
+    const lastData = history[historyIdx];
+    const tmp = document.createElement("canvas");
+    tmp.width = lastData.width; tmp.height = lastData.height;
+    const tc = tmp.getContext("2d")!;
+    tc.putImageData(lastData, 0, 0);
+    // Resize main canvas
+    mainCanvas.width = cw;
+    mainCanvas.height = ch;
+    ctx.drawImage(tmp, cx, cy, cw, ch, 0, 0, cw, ch);
+    history = []; historyIdx = -1; pushHistory();
+    (document.getElementById("crop-actions") as HTMLElement).style.display = "none";
+  }
+
   function onStart(e: MouseEvent | TouchEvent) {
     if (textInput.style.display !== "none") return;
+    // If crop actions visible, ignore new draws until crop is applied/cancelled
+    if ((document.getElementById("crop-actions") as HTMLElement).style.display !== "none") return;
     e.preventDefault();
     const pos = getPos(e);
     if (currentTool === "text") {
@@ -497,6 +588,10 @@ import Main from "@/layouts/Main.astro";
     }
     drawing = true;
     startX = pos.x; startY = pos.y; currentX = pos.x; currentY = pos.y;
+    if (currentTool === "crop") {
+      cropSelX1 = pos.x; cropSelY1 = pos.y;
+      cropSelX2 = pos.x; cropSelY2 = pos.y;
+    }
     if (currentTool === "pen" || currentTool === "eraser") {
       ctx.beginPath(); ctx.moveTo(pos.x, pos.y);
       ctx.lineCap = "round"; ctx.lineJoin = "round";
@@ -510,7 +605,10 @@ import Main from "@/layouts/Main.astro";
     e.preventDefault();
     const pos = getPos(e);
     currentX = pos.x; currentY = pos.y;
-    if (currentTool === "pen" || currentTool === "eraser") {
+    if (currentTool === "crop") {
+      cropSelX2 = pos.x; cropSelY2 = pos.y;
+      drawCropPreview();
+    } else if (currentTool === "pen" || currentTool === "eraser") {
       ctx.lineTo(pos.x, pos.y); ctx.stroke();
     } else if (currentTool === "blur") {
       drawBlurPreview();
@@ -522,7 +620,15 @@ import Main from "@/layouts/Main.astro";
   function onEnd() {
     if (!drawing) return;
     drawing = false;
-    if (currentTool === "pen" || currentTool === "eraser") {
+    if (currentTool === "crop") {
+      const w = Math.abs(cropSelX2 - cropSelX1);
+      const h = Math.abs(cropSelY2 - cropSelY1);
+      if (w > 10 && h > 10) {
+        (document.getElementById("crop-actions") as HTMLElement).style.display = "flex";
+      } else {
+        cancelCrop();
+      }
+    } else if (currentTool === "pen" || currentTool === "eraser") {
       ctx.closePath(); pushHistory();
     } else if (currentTool === "blur") {
       applyBlur();
@@ -600,6 +706,10 @@ import Main from "@/layouts/Main.astro";
   const toolBtns = document.querySelectorAll<HTMLButtonElement>(".tool-btn");
   toolBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
+      // Cancel active crop when switching tools
+      if ((document.getElementById("crop-actions") as HTMLElement).style.display !== "none") {
+        cancelCrop();
+      }
       toolBtns.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       currentTool = btn.dataset.tool as Tool;
@@ -639,6 +749,10 @@ import Main from "@/layouts/Main.astro";
     fillPlaceholder(); history = []; historyIdx = -1; pushHistory();
   });
 
+  // Crop handlers
+  document.getElementById("btn-crop-apply")!.addEventListener("click", applyCrop);
+  document.getElementById("btn-crop-cancel")!.addEventListener("click", cancelCrop);
+
   const copyBtn = document.getElementById("btn-copy")!;
   copyBtn.addEventListener("click", async () => {
     try {
@@ -660,6 +774,14 @@ import Main from "@/layouts/Main.astro";
 
   document.addEventListener("keydown", (e) => {
     if (textInput.style.display !== "none") return;
+    // Escape cancels crop
+    if (e.key === "Escape" && (document.getElementById("crop-actions") as HTMLElement).style.display !== "none") {
+      cancelCrop(); return;
+    }
+    // Enter applies crop
+    if (e.key === "Enter" && (document.getElementById("crop-actions") as HTMLElement).style.display !== "none") {
+      applyCrop(); return;
+    }
     if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
       e.preventDefault();
       if (historyIdx > 0) { historyIdx--; ctx.putImageData(history[historyIdx], 0, 0); }
@@ -669,7 +791,7 @@ import Main from "@/layouts/Main.astro";
     } else if ((e.ctrlKey || e.metaKey) && e.key === "c" && !window.getSelection()?.toString()) {
       e.preventDefault(); copyBtn.click();
     } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-      const map: Record<string, Tool> = { p: "pen", r: "rectangle", c: "circle", a: "arrow", t: "text", b: "blur", e: "eraser" };
+      const map: Record<string, Tool> = { p: "pen", r: "rectangle", c: "circle", a: "arrow", t: "text", b: "blur", e: "eraser", x: "crop" };
       const tool = map[e.key.toLowerCase()];
       if (tool) document.querySelector<HTMLButtonElement>(`[data-tool="${tool}"]`)?.click();
     }
